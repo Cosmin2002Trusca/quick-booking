@@ -48,6 +48,10 @@ class Booking(models.Model):
     def __str__(self):
         return f"Booking for {self.customer_name} on {self.booking_date} at {self.booking_time}"
 
+    def clean(self):
+        if self.number_of_guests > self.table.capacity:
+            raise ValidationError(f"The table capacity is {self.table.capacity}, please imput a valid guest number.")
+
 # Form for modify booking
 
 class BookingForm(forms.ModelForm):

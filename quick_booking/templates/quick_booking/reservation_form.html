@@ -7,11 +7,40 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap Datepicker CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    
+    <!-- Bootstrap Timepicker CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/css/bootstrap-timepicker.min.css">
+
+    <style>
+        .datepicker {
+            z-index: 1600 !important; /* Fixes datepicker rendering issue */
+        }
+    </style>
 </head>
 <body>
 
 <div class="container mt-5">
     <h2 class="text-center">Make a Reservation</h2>
+
+    {% if messages %}
+        <div class="alert alert-success">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
 
     <form method="POST">
         {% csrf_token %}
@@ -20,15 +49,38 @@
         <button type="submit" class="btn btn-primary w-100 mt-3">Submit Reservation</button>
     </form>
 
-    <!-- Logout Button -->
-    <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+    <div class="d-flex justify-content-between mt-4">
+        <!-- Logout Button -->
+        <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
 
-    <!-- Button for viewing bookings -->
-    <a href="{% url 'my_bookings' %}" class="btn btn-primary">View My Bookings</a>
+        <!-- Button for viewing bookings -->
+        <a href="{% url 'my_bookings' %}" class="btn btn-secondary">View My Bookings</a>
+    </div>
 </div>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- jQuery UI Datepicker JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+<!-- Bootstrap Timepicker JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/js/bootstrap-timepicker.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Initialize Datepicker
+        $('#id_booking_date').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true
+        });
+
+        // Initialize Timepicker
+        $('#id_booking_time').timepicker({
+            showMeridian: false // Use 24-hour format
+        });
+    });
+</script>
 
 </body>
 </html>
