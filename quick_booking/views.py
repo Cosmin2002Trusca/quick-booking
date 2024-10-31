@@ -7,6 +7,7 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.contrib.auth.views import LoginView
 
 # Create your views here.
 
@@ -29,7 +30,8 @@ def create_booking(request):
             booking = form.save(commit=False)  # Don't save yet
             booking.user = request.user  # Associate the booking with the logged-in user
             booking.save()  # Now save it
-            return redirect('my_bookings')  # Redirect to home or success page
+            messages.success(request, "Your booking was created successfully!")
+            return redirect('my_bookings')  # Redirect
     else:
         form = InlineBookingForm()
 
@@ -43,11 +45,18 @@ def register(request):
         if form.is_valid():
             user = form.save()  # Create the user
             login(request, user)  # Log in the user immediately
+            messages.success(request, "You have registered successfully! Welcome!")
             return redirect('create_booking')  # Redirect to booking page
     else:
         form = UserCreationForm()
 
     return render(request, 'quick_booking/register.html', {'form': form})
+
+
+class CustomLoginView(LoginView):
+    def form_valid(self, form):
+        messages.success(self.request, "You have successfully logged in!")
+        return super().form_valid(form)
 
 # Landing
 
@@ -70,6 +79,7 @@ def my_bookings(request):
             booking_id = request.POST.get('booking_id')
             booking = get_object_or_404(Booking, id=booking_id, user=request.user)
             booking.delete()
+            messages.success(request, "Your booking was deleted successfully!")
             return redirect('my_bookings')
 
         else:
@@ -78,6 +88,7 @@ def my_bookings(request):
             form = BookingForm(request.POST, instance=booking)
             if form.is_valid():
                 form.save()
+                messages.success(request, "Your booking was updated successfully!")
                 return redirect('my_bookings')
 
     # Create list of tuples with (booking, form) for displaying and editing
