@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.timezone import now
 from django.contrib.auth.models import User
 from django import forms
+from django.core.validators import RegexValidator
 
 # Create your models here.
 
@@ -25,7 +26,10 @@ class Booking(models.Model):
     # Basic customer details
     customer_name = models.CharField(max_length=50)
     customer_email = models.EmailField()
-    customer_phone = models.CharField(max_length=15, blank=True, null=True)
+
+    # RegexValidator for phone numbers: allows only digits
+    phone_validator = RegexValidator(regex=r'^\d+$', message="Phone number must be numeric.")
+    customer_phone = models.CharField(max_length=15, blank=True, null=True, validators=[phone_validator], help_text="Enter a valid phone number (digits only).")
 
     # Reservation details
     table = models.ForeignKey(Table, on_delete=models.CASCADE, related_name='bookings')
