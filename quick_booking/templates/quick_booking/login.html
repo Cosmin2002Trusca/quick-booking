@@ -9,17 +9,7 @@
 <body>
 <div class="container mt-5">
     <h2 class="text-center">Login</h2>
-
-    {% if messages %}
-        <div class="alert alert-success">
-            {% for message in messages %}
-                {% if message.tags == 'success' %}
-                    <p>{{ message }}</p>
-                {% endif %}
-            {% endfor %}
-        </div>
-    {% endif %}
-
+    
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}  <!-- Render the form fields -->

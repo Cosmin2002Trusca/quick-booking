@@ -3,7 +3,7 @@ from django import forms
 from django.views import generic
 from .models import Booking, Table, BookingForm
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -52,11 +52,35 @@ def register(request):
 
     return render(request, 'quick_booking/register.html', {'form': form})
 
+def custom_login_view(request):
+    # Define the form inline within the view
+    class CustomLoginForm(forms.Form):
+        username = forms.CharField(
+            max_length=150,
+            widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'})
+        )
+        password = forms.CharField(
+            widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'})
+        )
 
-class CustomLoginView(LoginView):
-    def form_valid(self, form):
-        messages.success(self.request, "You have successfully logged in!")
-        return super().form_valid(form)
+    # Handle POST request for login
+    if request.method == 'POST':
+        form = CustomLoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+
+            if user is not None:
+                login(request, user)
+                messages.info(request, "Welcome back! You've successfully logged in!")
+                return redirect('create_booking')  # Redirect to a target page
+            else:
+                form.add_error(None, "Invalid username or password.")  # Display custom error on form
+    else:
+        form = CustomLoginForm()  # Initialize an empty form for GET request
+
+    return render(request, 'quick_booking/login.html', {'form': form})
 
 # Landing
 
