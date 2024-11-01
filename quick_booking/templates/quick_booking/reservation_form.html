@@ -80,13 +80,21 @@
         // Initialize Datepicker
         $('#id_booking_date').datepicker({
             format: 'yyyy-mm-dd',
-            autoclose: true
+            autoclose: true,
+            startDate: new Date()
         });
 
         // Initialize Timepicker
         $('#id_booking_time').timepicker({
-            showMeridian: false // Use 24-hour format
+            showMeridian: false, // Use 24-hour format
+            defaultTime: false
         });
+
+        // Disable past times
+        var today = new Date();
+        var hours = today.getHours();
+        var minutes = today.getMinutes();
+        $('#id_booking_time').timepicker().timepicker('setTime', new Date(hours, minutes + 30)); // Set minimum time to 30 minutes from now
     });
 </script>
 

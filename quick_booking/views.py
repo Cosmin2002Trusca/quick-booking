@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
+from django.utils import timezone
 
 # Create your views here.
 
@@ -29,6 +30,18 @@ def create_booking(request):
         if form.is_valid():
             booking = form.save(commit=False)  # Don't save yet
             booking.user = request.user  # Associate the booking with the logged-in user
+
+            # Check if the selected date and time are in the past
+            now = timezone.now()
+            
+            # Combine booking_date and booking_time into a single datetime object
+            booking_datetime = timezone.make_aware(
+                timezone.datetime.combine(booking.booking_date, booking.booking_time)
+            )
+
+            if booking_datetime < now:
+                form.add_error(None, "You cannot book a date or time in the past.")
+            
             booking.save()  # Now save it
             messages.success(request, "Your booking was created successfully!")
             return redirect('my_bookings')  # Redirect

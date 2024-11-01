@@ -3,6 +3,8 @@ from django.utils.timezone import now
 from django.contrib.auth.models import User
 from django import forms
 from django.core.validators import RegexValidator
+from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 
@@ -55,6 +57,17 @@ class Booking(models.Model):
     def clean(self):
         if self.number_of_guests > self.table.capacity:
             raise ValidationError(f"The table capacity is {self.table.capacity}, please imput a valid guest number.")
+
+        # Check if the booking date and time are in the past
+        now = timezone.now()
+        booking_datetime = timezone.datetime.combine(self.booking_date, self.booking_time)
+
+        # Make sure booking_datetime is timezone-aware
+        if timezone.is_naive(booking_datetime):
+            booking_datetime = timezone.make_aware(booking_datetime)
+
+        if booking_datetime < now:
+            raise ValidationError("You cannot book a date or time in the past.")
 
 # Form for modify booking
 
