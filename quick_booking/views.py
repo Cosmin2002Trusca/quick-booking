@@ -124,9 +124,9 @@ def my_bookings(request):
             booking = get_object_or_404(Booking, id=booking_id, user=request.user)
             form = BookingForm(request.POST, instance=booking)
             if form.is_valid():
-                form.save()
-                messages.success(request, "Your booking was updated successfully!")
-                return redirect('my_bookings')
+                    form.save()
+                    messages.success(request, "Your booking was updated successfully!")
+                    return redirect('my_bookings')
 
     # Create list of tuples with (booking, form) for displaying and editing
     booking_forms = [(booking, BookingForm(instance=booking)) for booking in bookings]

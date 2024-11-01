@@ -67,5 +67,27 @@
 
         <a href="{% url 'create_booking' %}" class="btn btn-primary">Create a New Booking</a>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const today = new Date().toISOString().split('T')[0]; // Today's date in 'YYYY-MM-DD' format
+    
+            // For each booking date field, set the min attribute to today’s date to prevent past dates
+            document.querySelectorAll('input[name="booking_date"]').forEach(input => {
+                input.setAttribute("min", today);
+            });
+    
+            // For each booking time field, restrict time to between 9:00 and 22:00
+            document.querySelectorAll('input[name="booking_time"]').forEach(input => {
+                input.addEventListener("input", function() {
+                    const timeValue = input.value;
+                    if (timeValue < "09:00" || timeValue > "22:00") {
+                        alert("Please select a time between 09:00 and 22:00.");
+                        input.value = ""; // Clear the input if outside allowed range
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

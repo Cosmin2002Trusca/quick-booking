@@ -55,8 +55,17 @@ class Booking(models.Model):
         return f"Booking for {self.customer_name} on {self.booking_date} at {self.booking_time}"
 
     def clean(self):
+
+        super().clean()  # Call parent's clean method
+
         if self.number_of_guests > self.table.capacity:
             raise ValidationError(f"The table capacity is {self.table.capacity}, please imput a valid guest number.")
+
+        # Ensure booking time is between 9:00 and 22:00
+        min_time = timezone.datetime.strptime("09:00", "%H:%M").time()
+        max_time = timezone.datetime.strptime("22:00", "%H:%M").time()
+        if not (min_time <= self.booking_time <= max_time):
+            raise ValidationError("Booking time must be between 09:00 and 22:00.")
 
         # Check if the booking date and time are in the past
         now = timezone.now()
