@@ -1,97 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Bookings</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Body and background styling */
         body {
             font-family: Arial, sans-serif;
             background: linear-gradient(to right, #6a11cb, #2575fc);
-            color: #f8f9fa;
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-            min-height: 100vh;
-            margin: 0;
+            color: #333;
         }
 
-        /* Container styling */
         .container {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.9);
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-            max-width: 800px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            margin: 50px auto;
         }
 
-        /* Header styling */
         h1 {
-            font-size: 2rem;
-            color: #f8f9fa;
-            font-weight: bold;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #6a11cb;
             text-align: center;
         }
 
-        /* Table styling */
-        .table {
-            color: #f8f9fa;
-            margin-top: 20px;
-        }
-
-        .table thead th {
-            background-color: rgba(0, 0, 0, 0.2);
-            border: none;
-            color: #f8f9fa;
-        }
-
-        .table-striped tbody tr:nth-of-type(odd) {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .table-striped tbody tr:nth-of-type(even) {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        /* Button styling */
-        .btn-primary, .btn-success, .btn-danger {
-            font-size: 1rem;
-            padding: 8px 16px;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover, .btn-success:hover, .btn-danger:hover {
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Text styling */
-        .text-muted {
-            color: #ced4da;
-        }
-
         .alert {
-            display: none;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        table th,
+        table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .btn {
+            margin-top: 10px;
+        }
+
+        .text-muted {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            table th,
+            table td {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .btn {
+                font-size: 0.8rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container mt-5">
         <h1>My Bookings</h1>
         <hr>
 
         {% if messages %}
-            <div class="alert alert-success">
-                {% for message in messages %}
-                    {{ message }}
-                {% endfor %}
-            </div>
+        <div class="alert alert-success">
+            {% for message in messages %}
+            {{ message }}
+            {% endfor %}
+        </div>
         {% endif %}
 
         {% if booking_forms %}
+        <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -113,53 +122,35 @@
                         <td>{{ booking.number_of_guests }}</td>
                         <td>{{ booking.special_request|default:"N/A" }}</td>
                         <td>
-                            <!-- Edit form -->
-                            <form method="POST">
+                            <form method="POST" class="d-inline">
                                 {% csrf_token %}
                                 <input type="hidden" name="booking_id" value="{{ booking.id }}">
                                 {{ form.as_p }}
-                                <button type="submit" class="btn btn-success">Save Changes</button>
+                                <button type="submit" class="btn btn-success btn-sm">Save Changes</button>
                             </form>
                         </td>
                         <td>
-                            <!-- Delete form -->
-                            <form method="POST">
+                            <form method="POST" class="d-inline">
                                 {% csrf_token %}
                                 <input type="hidden" name="booking_id" value="{{ booking.id }}">
-                                <button type="submit" name="delete_booking" class="btn btn-danger">Delete</button>
+                                <button type="submit" name="delete_booking" class="btn btn-danger btn-sm">Delete</button>
                             </form>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
         {% else %}
-            <p class="text-muted">You have no bookings at the moment.</p>
+        <p class="text-muted">You have no bookings at the moment.</p>
         {% endif %}
 
-        <a href="{% url 'create_booking' %}" class="btn btn-primary">Create a New Booking</a>
+        <div class="text-center">
+            <a href="{% url 'create_booking' %}" class="btn btn-primary">Create a New Booking</a>
+        </div>
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const today = new Date().toISOString().split('T')[0]; // Today's date in 'YYYY-MM-DD' format
-    
-            // For each booking date field, set the min attribute to today’s date to prevent past dates
-            document.querySelectorAll('input[name="booking_date"]').forEach(input => {
-                input.setAttribute("min", today);
-            });
-    
-            // For each booking time field, restrict time to between 9:00 and 22:00
-            document.querySelectorAll('input[name="booking_time"]').forEach(input => {
-                input.addEventListener("input", function() {
-                    const timeValue = input.value;
-                    if (timeValue < "09:00" || timeValue > "22:00") {
-                        alert("Please select a time between 09:00 and 22:00.");
-                        input.value = ""; // Clear the input if outside allowed range
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

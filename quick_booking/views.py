@@ -58,7 +58,6 @@ def register(request):
         if form.is_valid():
             user = form.save()  # Create the user
             login(request, user)  # Log in the user immediately
-            messages.success(request, "You have registered successfully! Welcome!")
             return redirect('create_booking')  # Redirect to booking page
     else:
         form = UserCreationForm()
@@ -86,7 +85,6 @@ def custom_login_view(request):
 
             if user is not None:
                 login(request, user)
-                messages.info(request, "Welcome back! You've successfully logged in!")
                 return redirect('create_booking')  # Redirect to a target page
             else:
                 form.add_error(None, "Invalid username or password.")  # Display custom error on form
